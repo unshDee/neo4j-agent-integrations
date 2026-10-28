@@ -144,9 +144,11 @@ async def query_company(company_name: str) -> str:
     query = """
     MATCH (o:Organization {name: $company})
     RETURN o.name as name,
-           [(o)-[:LOCATED_IN]->(loc:Location) | loc.name] as locations,
-           [(o)-[:IN_INDUSTRY]->(ind:Industry) | ind.name] as industries,
-           [(o)<-[:WORKS_FOR]-(p:Person) | {name: p.name, title: p.title}] as leadership
+           [(o)-[:IN_CITY]->(city:City) | city.name] +
+           [(o)-[:IN_CITY]->(:City)-[:IN_COUNTRY]->(country:Country) | country.name] as locations,
+           [(o)-[:HAS_CATEGORY]->(cat:IndustryCategory) | cat.name] as industries,
+           [(o)-[:HAS_CEO]->(ceo:Person) | {name: ceo.name, title: 'CEO'}] +
+           [(o)-[:HAS_BOARD_MEMBER]->(m:Person) | {name: m.name, title: 'Board Member'}] as leadership
     LIMIT 1
     """
     try:

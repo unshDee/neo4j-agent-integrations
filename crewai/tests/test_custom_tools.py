@@ -57,3 +57,30 @@ def test_company_query_uses_local_mcp_when_configured(monkeypatch):
 
     assert result == '{\n  "name": "Contoso"\n}'
     mcp_query.assert_awaited_once()
+
+
+def test_query_company_uses_demo_database_schema(monkeypatch):
+    """The demo graph uses IN_CITY / HAS_CATEGORY / HAS_CEO, not LOCATED_IN etc."""
+    monkeypatch.delenv("MCP_SERVER_COMMAND", raising=False)
+    calls = []
+
+    class FakeDriver:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def execute_query(self, query, **params):
+            calls.append(query)
+            return [], None, None
+
+    monkeypatch.setattr(custom_tools_module, "get_driver", FakeDriver)
+
+    asyncio.run(custom_tools_module.query_company("Neo4j"))
+
+    query = calls[0]
+    for missing in ("LOCATED_IN", "IN_INDUSTRY", "WORKS_FOR"):
+        assert missing not in query
+    for rel in ("IN_CITY", "HAS_CATEGORY", "HAS_CEO", "HAS_BOARD_MEMBER"):
+        assert rel in query

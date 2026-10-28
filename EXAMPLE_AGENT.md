@@ -60,9 +60,11 @@ def query_company(company_name: str) -> dict:
     query = """
     MATCH (o:Organization {name: $company})
     RETURN o.name as name,
-           [(o)-[:LOCATED_IN]->(loc:Location) | loc.name] as locations,
-           [(o)-[:IN_INDUSTRY]->(ind:Industry) | ind.name] as industries,
-           [(o)<-[:WORKS_FOR]-(p:Person) | {name: p.name, title: p.title}] as leadership
+           [(o)-[:IN_CITY]->(city:City) | city.name] +
+           [(o)-[:IN_CITY]->(:City)-[:IN_COUNTRY]->(country:Country) | country.name] as locations,
+           [(o)-[:HAS_CATEGORY]->(cat:IndustryCategory) | cat.name] as industries,
+           [(o)-[:HAS_CEO]->(ceo:Person) | {name: ceo.name, title: 'CEO'}] +
+           [(o)-[:HAS_BOARD_MEMBER]->(m:Person) | {name: m.name, title: 'Board Member'}] as leadership
     LIMIT 1
     """
     records, summary, keys = driver.execute_query(
@@ -1144,25 +1146,29 @@ A complete research report should include:
 Quick reference for the data model:
 
 **Organizations:**
-- Properties: `name`, `description`, `website`
-- Outgoing: `[:LOCATED_IN]->(:Location)`
-- Outgoing: `[:IN_INDUSTRY]->(:Industry)`
-- Incoming: `[:WORKS_FOR]-(:Person)`
+- Properties: `id`, `name`, `summary`, `revenue`, `nbrEmployees`, `isPublic`, `isDissolved`, `motto`
+- Outgoing: `[:IN_CITY]->(:City)`, and `(:City)-[:IN_COUNTRY]->(:Country)`
+- Outgoing: `[:HAS_CATEGORY]->(:IndustryCategory)`
+- Outgoing: `[:HAS_CEO]->(:Person)`, `[:HAS_BOARD_MEMBER]->(:Person)`
+- Outgoing: `[:HAS_SUBSIDIARY|HAS_SUPPLIER|HAS_COMPETITOR]->(:Organization)`
+- Outgoing: `[:HAS_INVESTOR]->(:Organization|Person)`
 - Incoming: `[:MENTIONS]-(:Article)`
 
 **Articles:**
-- Properties: `title`, `date`, `url`
+- Properties: `id`, `title`, `date`, `author`, `siteName`, `summary`, `sentiment`
 - Outgoing: `[:MENTIONS]->(:Organization)`
 - Outgoing: `[:HAS_CHUNK]->(:Chunk)`
 
 **Chunks:**
-- Properties: `text`, `embedding` (vector)
-- Vector index: `news`
+- Properties: `id`, `text`, `embedding`, `embedding_google`, `embedding_google_004`, `embedding_sbert`
+- Vector indexes: `news` (`embedding`, 1536 dims), `news_google` (`embedding_google`, 768), `news_google_004` (`embedding_google_004`, 768), `news_sbert` (`embedding_sbert`, 384)
+- Full-text index: `news_fulltext` on `text`
 - Incoming: `[:HAS_CHUNK]-(:Article)`
 
 **People:**
-- Properties: `name`, `title`
-- Outgoing: `[:WORKS_FOR]->(:Organization)`
+- Properties: `id`, `name`, `summary`
+- Incoming: `[:HAS_CEO]-(:Organization)`, `[:HAS_BOARD_MEMBER]-(:Organization)`
+- Outgoing: `[:HAS_PARENT]->(:Person)`, `[:HAS_CHILD]->(:Person)`
 
 ## Platform-Specific Notes
 
