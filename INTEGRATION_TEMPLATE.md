@@ -64,8 +64,6 @@ Explain how to define custom functions that interact with Neo4j.
 - Limitations
 - Best practices
 
-**Reference**: [mcp-auth-support.md](../mcp-auth-support.md#section-number)
-
 ## Industry Research Agent Example
 
 ### Scenario

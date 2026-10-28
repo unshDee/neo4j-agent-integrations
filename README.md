@@ -11,7 +11,7 @@ This repository provides self-contained integration guides showing how to build 
 ## Quick Start
 
 1. Choose a platform from [Platform Coverage](#platform-coverage)
-2. Navigate to its folder (e.g., `langraph/`, `aws-agentcore/`)
+2. Navigate to its folder (e.g., `langgraph/`, `aws-agentcore/`)
 3. Follow the README for setup and examples
 4. Use the demo database to test
 
@@ -55,8 +55,11 @@ This provides a consistent pattern for comparing integration approaches across p
 
 ### Cloud Providers
 - **[aws-agentcore](./aws-agentcore/)** - AWS AgentCore Bedrock (native MCP + A2A)
+- **[aws-agentcore-marketplace](./aws-agentcore-marketplace/)** - Neo4j MCP server from AWS Marketplace on AgentCore (CLI deployment)
 - **[microsoft-foundry](./microsoft-foundry/)** - Azure AI Foundry (native MCP + A2A)
+- **[microsoft-copilot-studio](./microsoft-copilot-studio/)** - Microsoft Copilot Studio (low-code agents + MCP)
 - **[google-gemini-enterprise](./google-gemini-enterprise/)** - Google Gemini Enterprise (MCP + Vertex AI Extensions)
+- **[gcp-managed-agents](./gcp-managed-agents/)** - Vertex AI Managed Agent platform (MCP)
 
 ### Vertical Platforms
 - **[datarobot](./datarobot/)** - DataRobot Agentic AI
@@ -84,6 +87,7 @@ This provides a consistent pattern for comparing integration approaches across p
 - **[ibm-watsonx](./ibm-watsonx/)** - IBM watsonx Orchestrate
 - **[n8n](./n8n/)** - n8n
 - **[langflow](./langflow/)** - Langflow
+- **[uipath-ai-agent](./uipath-ai-agent/)** - UiPath AI Agent (Agentic Automation)
 
 ## Integration Patterns
 
@@ -166,7 +170,7 @@ Use dedicated extension points of the agent framework to implement a specific in
 
 ## Authentication
 
-Different platforms support different auth mechanisms. See **[mcp-auth-support.md](./mcp-auth-support.md)** for detailed comparison.
+Different platforms support different auth mechanisms. Each platform's README documents its setup.
 
 **Common patterns:**
 - **API Keys** - Simplest, supported everywhere
